@@ -91,7 +91,7 @@ public class EchoServer extends AbstractServer
 	        System.out.println("Error closing server.");
 	    }
 	    System.exit(0);
-	}
+  }
 
   //Class methods ***************************************************
   

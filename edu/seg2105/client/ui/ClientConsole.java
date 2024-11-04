@@ -172,6 +172,16 @@ public class ClientConsole implements ChatIF
 	        System.out.println("Unknown command.");
 	    }
 	}
+  
+  public void quit() {
+	    try {
+	        client.closeConnection();  // Close the connection to the server
+	    } catch (IOException e) {
+	        System.out.println("Error while closing connection.");
+	    }
+	    System.exit(0);  // Exit the program
+	}
+
 
   //Class methods ***************************************************
   
