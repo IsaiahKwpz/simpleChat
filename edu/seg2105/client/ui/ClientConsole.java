@@ -106,8 +106,73 @@ public class ClientConsole implements ChatIF
   {
     System.out.println("> " + message);
   }
-
   
+  public void handleMessageFromClientConsole(String message) {
+	    if (message.startsWith("#")) {
+	        handleClientCommand(message);
+	    } else {
+	        try {
+	            client.sendToServer(message);  // Send the message to the server if it's not a command
+	        } catch (IOException e) {
+	            System.out.println("Could not send message to server. Terminating client.");
+	            quit();
+	        }
+	    }
+	}
+
+  private void handleClientCommand(String command) {
+	    if (command.equalsIgnoreCase("#quit")) {
+	        client.quit();
+	    } else if (command.equalsIgnoreCase("#logoff")) {
+	        try {
+	            client.closeConnection();
+	        } catch (IOException e) {
+	            System.out.println("Error logging off.");
+	        }
+	    } else if (command.startsWith("#sethost")) {
+	        if (!client.isConnected()) {
+	            String[] commandParts = command.split(" ");
+	            if (commandParts.length == 2) {
+	                client.setHost(commandParts[1]);
+	                System.out.println("Host set to " + commandParts[1]);
+	            }
+	        } else {
+	            System.out.println("Error: Cannot set host while connected.");
+	        }
+	    } else if (command.startsWith("#setport")) {
+	        if (!client.isConnected()) {
+	            String[] commandParts = command.split(" ");
+	            if (commandParts.length == 2) {
+	                try {
+	                    int port = Integer.parseInt(commandParts[1]);
+	                    client.setPort(port);
+	                    System.out.println("Port set to " + port);
+	                } catch (NumberFormatException e) {
+	                    System.out.println("Invalid port number.");
+	                }
+	            }
+	        } else {
+	            System.out.println("Error: Cannot set port while connected.");
+	        }
+	    } else if (command.equalsIgnoreCase("#login")) {
+	        if (!client.isConnected()) {
+	            try {
+	                client.openConnection();
+	            } catch (IOException e) {
+	                System.out.println("Error connecting to server.");
+	            }
+	        } else {
+	            System.out.println("Error: Already connected.");
+	        }
+	    } else if (command.equalsIgnoreCase("#gethost")) {
+	        System.out.println("Current host: " + client.getHost());
+	    } else if (command.equalsIgnoreCase("#getport")) {
+	        System.out.println("Current port: " + client.getPort());
+	    } else {
+	        System.out.println("Unknown command.");
+	    }
+	}
+
   //Class methods ***************************************************
   
   /**

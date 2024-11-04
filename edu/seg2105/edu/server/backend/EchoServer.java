@@ -4,6 +4,8 @@ package edu.seg2105.edu.server.backend;
 // license found at www.lloseng.com 
 
 
+import java.io.IOException;
+
 import ocsf.server.*;
 
 /**
@@ -81,6 +83,15 @@ public class EchoServer extends AbstractServer
   protected void clientDisconnected(ConnectionToClient client) {
       System.out.println("Client disconnected: " + client);
   }
+  
+  public void quit() {
+	    try {
+	        close();
+	    } catch (IOException e) {
+	        System.out.println("Error closing server.");
+	    }
+	    System.exit(0);
+	}
 
   //Class methods ***************************************************
   
