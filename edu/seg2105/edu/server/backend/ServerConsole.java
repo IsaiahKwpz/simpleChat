@@ -1,4 +1,9 @@
 package edu.seg2105.edu.server.backend;
+import java.io.BufferedReader;
+import java.io.IOException;
+
+import edu.seg2105.client.common.ChatIF;
+
 
 public class ServerConsole implements ChatIF {
     final private EchoServer server;
