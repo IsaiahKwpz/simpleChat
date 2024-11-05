@@ -1,4 +1,4 @@
-package edu.seg2105.edu.server.backend;
+package edu.seg2105.edu.server.ui;
 
 package edu.seg2105.server.ui;
 
