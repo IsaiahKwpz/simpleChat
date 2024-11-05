@@ -26,10 +26,13 @@ public class EchoServer extends AbstractServer
    * The default port to listen on.
    */
   final public static int DEFAULT_PORT = 5555;
-  
+  /**
+   * LoginKey to get client info
+   */
   final public static String loginKey = "loginID";
   
-  ChatIF serverUI; 
+  //Instance Variable 
+  ChatIF server; 
   
   //Constructors ****************************************************
   
@@ -56,7 +59,7 @@ public class EchoServer extends AbstractServer
   public void handleMessageFromClient
     (Object msg, ConnectionToClient client)
   {
-	  System.out.println("Message received: " + msg + " from " + client.getInfo(loginKey));
+	  server.display("Message received: " + msg + " from " + client.getInfo(loginKey));
 	  String message = msg.toString();
 
       if (message.startsWith("#login ")) {
@@ -65,13 +68,13 @@ public class EchoServer extends AbstractServer
         	  client.setInfo(loginKey, loginID);
         	  
         	  //Send login message
-        	  String newMessage = loginID + " has logged on";
-        	  System.out.println(newMessage);
-  			  sendToAllClients(newMessage);
+        	  String sentMsg = loginID + " has logged on";
+        	  server.display(sentMsg);
+  			  sendToAllClients(sentMsg);
           }
           else {
         	  try {
-        		  client.sendToClient("Error - Already logged in - terminating connection");
+        		  client.sendToClient("Already logged in - terminating connection");
   				client.close();
   			} catch (IOException e) {}        	  
          }
@@ -86,10 +89,8 @@ public class EchoServer extends AbstractServer
    * This method overrides the one in the superclass.  Called
    * when the server starts listening for connections.
    */
-  protected void serverStarted()
-  {
-    System.out.println
-      ("Server listening for connections on port " + getPort());
+  protected void serverStarted(){
+    server.display("Server is now listening for connections on port " + getPort());
   }
   
   /**
@@ -98,8 +99,7 @@ public class EchoServer extends AbstractServer
    */
   protected void serverStopped()
   {
-    System.out.println
-      ("Server has stopped listening for connections.");
+    server.display("Server has now stopped listening for connections.");
   }
   /**
    * Called when a client connects to the server.
@@ -109,7 +109,7 @@ public class EchoServer extends AbstractServer
   @Override
   protected void clientConnected(ConnectionToClient client) {
 	  String loginID = (String) client.getInfo(loginKey);
-      System.out.println("Client connected: " + loginID);
+      server.display("Client connected: " + loginID);
   }
   /**
    * Called when a client disconnects from the server.
@@ -119,7 +119,7 @@ public class EchoServer extends AbstractServer
   @Override
   synchronized protected void clientDisconnected(ConnectionToClient client) {
 	  String loginID = (String) client.getInfo(loginKey);
-      System.out.println("Client disconnected: " + loginID);
+      server.display("Client disconnected: " + loginID);
   }
   /**
    * Called when a client is disconnected due to an exception.
@@ -129,7 +129,8 @@ public class EchoServer extends AbstractServer
    */
   @Override
   synchronized protected void clientException(ConnectionToClient client, Throwable exception) {
-      System.out.println("Client disconnected unexpectedly: " + client);
+	  String loginID = (String) client.getInfo(loginKey);
+      server.display("Client disconnected unexpectedly: " + loginID);
   }
   
   /**
@@ -144,7 +145,7 @@ public class EchoServer extends AbstractServer
 		else if(isListening()){
 			// echo server message to the server and all clients
 			String toDisplay = "Server MSG> " + message;
-			System.out.println(toDisplay);
+			server.display(toDisplay);
 			sendToAllClients(toDisplay);
 		}
 }

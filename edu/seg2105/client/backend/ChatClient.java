@@ -115,12 +115,19 @@ public class ChatClient extends AbstractClient
     System.exit(0);
   }
   
+  /**
+   * This method displays connection closed to client when connecton is closed
+   */
+  
   @Override
   public void connectionClosed() {
       System.out.println("Connection closed");
       clientUI.display("Connection closed");
   }
 
+  /**
+   * This method displays server shut down unexepectedly when a connection exception occurs
+   */
   @Override
   public void connectionException(Exception exception) {
       System.out.println("Server has shut down unexpectedly.");
@@ -133,15 +140,17 @@ public class ChatClient extends AbstractClient
    * @param command The command entered by the client.
    */
   private void handleCommand(String command) {
-    if (command.equalsIgnoreCase("#quit")) {
+    if (command.equalsIgnoreCase("#quit")) { //Quits connection and terminates
         quit();
-    } else if (command.equals("#logoff")) {
+    } 
+    else if (command.equals("#logoff")) { //closes connection, but does not terminate
         try {
             closeConnection();
         } catch (IOException e) {
             clientUI.display("Error logging off.");
         }
-    } else if (command.startsWith("#sethost")) {
+    } 
+    else if (command.startsWith("#sethost")) { //sets host
         if (!isConnected()) {
             String[] tokens = command.split(" ");
             if (tokens.length > 1) {
@@ -152,7 +161,8 @@ public class ChatClient extends AbstractClient
         } else {
             clientUI.display("You must log off before setting the host.");
         }
-    } else if (command.startsWith("#setport")) {
+    } 
+    else if (command.startsWith("#setport")) { //sets port
         if (!isConnected()) {
             String[] tokens = command.split(" ");
             if (tokens.length > 1) {
@@ -167,17 +177,21 @@ public class ChatClient extends AbstractClient
         } else {
             clientUI.display("You must log off before setting the port.");
         }
-    } else if (command.equals("#login")) {
+    } 
+    else if (command.equals("#login")) { //logs in
         if (!isConnected()) {
             connectionEstablished();
         } else {
             clientUI.display("You are already logged in.");
         }
-    } else if (command.equals("#gethost")) {
+    } 
+    else if (command.equals("#gethost")) {  //gets host
         clientUI.display("Current host: " + getHost());
-    } else if (command.equals("#getport")) {
+    } 
+    else if (command.equals("#getport")) {  //gets port
         clientUI.display("Current port: " + getPort());
-    } else {
+    } 
+    else {
         clientUI.display("Unknown command.");
     }
   }
