@@ -1,4 +1,4 @@
-package edu.seg2105.client.ui;
+package client.ui;
 // This file contains material supporting section 3.7 of the textbook:
 // "Object Oriented Software Engineering" and is issued under the open-source
 // license found at www.lloseng.com 
@@ -6,8 +6,8 @@ package edu.seg2105.client.ui;
 import java.io.*;
 import java.util.Scanner;
 
-import edu.seg2105.client.backend.ChatClient;
-import edu.seg2105.client.common.*;
+import client.backend.*;
+import client.common.*;
 
 /**
  * This class constructs the UI for a chat client.  It implements the
@@ -50,11 +50,11 @@ public class ClientConsole implements ChatIF
    * @param host The host to connect to.
    * @param port The port to connect on.
    */
-  public ClientConsole(String host, int port) 
+  public ClientConsole(String loginID, String host, int port) 
   {
     try 
     {
-      client= new ChatClient(host, port, this);
+      client= new ChatClient(loginID, host, port, this);
       
       
     } 
@@ -122,6 +122,10 @@ public class ClientConsole implements ChatIF
 	  int port = DEFAULT_PORT;
 
 	  try {
+		  if (args.length == 0) {
+	            throw new IllegalArgumentException("ERROR - No login ID specified. Connection aborted.");\
+	            System.exit(0);
+	        }
 	      loginID = args[0];  // Get the login id from the first argument
 	      host = args[1];     // Get the host from the second argument (optional)
 	      if (args.length > 2) {

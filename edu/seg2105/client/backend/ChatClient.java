@@ -2,13 +2,14 @@
 // "Object Oriented Software Engineering" and is issued under the open-source
 // license found at www.lloseng.com 
 
-package edu.seg2105.client.backend;
+package client.backend;
 
 import ocsf.client.*;
 
 import java.io.*;
 
-import edu.seg2105.client.common.*;
+import client.common.ChatIF;
+import client.common.*;
 
 /**
  * This class overrides some of the methods defined in the abstract
@@ -73,16 +74,17 @@ public class ChatClient extends AbstractClient
    */
   public void handleMessageFromClientUI(String message)
   {
-	  if (message.startsWith("#")) {
-	        // Handle commands
-	        handleCommand(message);
-	    } else {
-	        try {
+	  try {
+		  if (message.startsWith("#")) {
+			  // Handle commands
+	          handleCommand(message);
+	    } else if(isConnected()) {
 	            sendToServer(message);
-	        } catch (IOException e) {
+	    } 
+	  }
+	  catch (IOException e) {
 	            clientUI.display("Could not send message to server. Terminating client.");
 	            quit();
-	        }
 	    }
   }
   
@@ -107,7 +109,7 @@ public class ChatClient extends AbstractClient
   {
     try
     {
-      closeConnection();
+    	closeConnection();     
     }
     catch(IOException e) {clientUI.display("Error closing connection");}
     System.exit(0);
@@ -117,14 +119,13 @@ public class ChatClient extends AbstractClient
   public void connectionClosed() {
       System.out.println("Connection closed. Server has shut down.");
       clientUI.display("The server has shut down.");
-      quit();
   }
 
   @Override
   public void connectionException(Exception exception) {
       System.out.println("Server has shut down unexpectedly.");
       clientUI.display("The server has shut down unexpectedly.");
-      quit();
+      System.exit(0);
   }
   /**
    * This method handles commands entered by the client.
@@ -134,7 +135,7 @@ public class ChatClient extends AbstractClient
   private void handleCommand(String command) {
     if (command.equalsIgnoreCase("#quit")) {
         quit();
-    } else if (command.equalsIgnoreCase("#logoff")) {
+    } else if (command.equals("#logoff")) {
         try {
             closeConnection();
         } catch (IOException e) {
@@ -166,7 +167,7 @@ public class ChatClient extends AbstractClient
         } else {
             clientUI.display("You must log off before setting the port.");
         }
-    } else if (command.equalsIgnoreCase("#login")) {
+    } else if (command.equals("#login")) {
         if (!isConnected()) {
             try {
                 openConnection();
@@ -176,9 +177,9 @@ public class ChatClient extends AbstractClient
         } else {
             clientUI.display("You are already logged in.");
         }
-    } else if (command.equalsIgnoreCase("#gethost")) {
+    } else if (command.equals("#gethost")) {
         clientUI.display("Current host: " + getHost());
-    } else if (command.equalsIgnoreCase("#getport")) {
+    } else if (command.equals("#getport")) {
         clientUI.display("Current port: " + getPort());
     } else {
         clientUI.display("Unknown command.");

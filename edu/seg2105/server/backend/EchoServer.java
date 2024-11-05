@@ -1,8 +1,10 @@
-package edu.seg2105.edu.server.backend;
+package server.backend;
 // This file contains material supporting section 3.7 of the textbook:
 // "Object Oriented Software Engineering" and is issued under the open-source
 // license found at www.lloseng.com 
 
+
+import java.io.IOException;
 
 import ocsf.server.*;
 
@@ -116,6 +118,18 @@ public class EchoServer extends AbstractServer
   @Override
   synchronized protected void clientException(ConnectionToClient client, Throwable exception) {
       System.out.println("Client disconnected unexpectedly: " + client);
+  }
+  /**
+   * This method terminates the server.
+   */
+  public void quit()
+  {
+    try
+    {
+      close();
+    }
+    catch(IOException e) {}
+    System.exit(0);
   }
 
   //Class methods ***************************************************

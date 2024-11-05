@@ -1,10 +1,10 @@
-package edu.seg2105.edu.server.ui;
+package server.ui;
 
-package edu.seg2105.server.ui;
 
+import java.io.IOException;
 import java.util.Scanner;
-import edu.seg2105.server.backend.EchoServer;
-import edu.seg2105.client.common.ChatIF;
+import server.backend.EchoServer;
+import client.common.ChatIF;
 
 /**
  * This class constructs the UI for the server and implements the
@@ -16,7 +16,14 @@ public class ServerConsole implements ChatIF {
     Scanner fromConsole;
 
     public ServerConsole(int port) {
-        server = new EchoServer(port);
+    	try {
+    		server = new EchoServer(port);
+    		server.listen();
+    	}catch(IOException excpetion) {
+    		System.out.println("Error: Could not listen for clients!");
+			System.exit(1);
+    	}
+        
         fromConsole = new Scanner(System.in);
     }
 
@@ -24,17 +31,17 @@ public class ServerConsole implements ChatIF {
      * This method starts the server and waits for console input.
      */
     public void accept() {
-        try {
-            server.listen();  // Start listening for clients
-        } catch (Exception e) {
-            System.out.println("Error: Could not start server.");
-            return;
-        }
-
-        while (true) {
-            String message = fromConsole.nextLine();
-            handleCommand(message);
-        }
+    	try {
+    		
+    		while (true) {
+    			String message = fromConsole.nextLine();
+    			handleCommand(message);
+    		}
+    	}catch(Exception ex) 
+	    {
+  	      System.out.println
+  	        ("Unexpected error while reading from console!");
+  	    }
     }
 
     /**
