@@ -4,8 +4,6 @@ package edu.seg2105.edu.server.backend;
 // license found at www.lloseng.com 
 
 
-import java.io.IOException;
-
 import ocsf.server.*;
 
 /**
@@ -47,40 +45,28 @@ public class EchoServer extends AbstractServer
    * @param msg The message received from the client.
    * @param client The connection from which the message originated.
    */
-  public void handleMessageFromClient(Object msg, ConnectionToClient client)
+  public void handleMessageFromClient
+    (Object msg, ConnectionToClient client)
   {
 	  String message = msg.toString();
 
-      // Check if the message is a login command
-      if (message.startsWith("#login")) {
-          String[] parts = message.split(" ");
-          if (parts.length == 2) {
-              String loginID = parts[1];  // Extract the login ID
-              client.setInfo("loginID", loginID);  // Store the login ID in the client connection
-              System.out.println("Client " + loginID + " has logged in.");
-          } else {
+      if (message.startsWith("#login ")) {
+          if (client.getInfo("loginID") != null) {
               try {
-                  client.sendToClient("Error: Invalid login command.");
-                  client.close();  // Close connection if the login command is invalid
+                  client.sendToClient("Error: You are already logged in.");
+                  client.close();  // Disconnect if trying to login again
               } catch (IOException e) {
-                  System.out.println("Error handling invalid login.");
-              }
-          }
-      } else {
-          // Check if the client has already logged in
-          if (client.getInfo("loginID") == null) {
-              try {
-                  client.sendToClient("Error: You must log in first.");
-                  client.close();  // Close connection if the login has not occurred
-              } catch (IOException e) {
-                  System.out.println("Error: Unable to close connection.");
+                  e.printStackTrace();
               }
           } else {
-              // Handle normal messages and prefix with loginID
-              String loginID = (String) client.getInfo("loginID");
-              System.out.println("Message from " + loginID + ": " + message);
-              sendToAllClients(loginID + ": " + message);  // Broadcast the message with loginID
+              String loginID = message.substring(7);  // Extract login ID
+              client.setInfo("loginID", loginID);  // Store the login ID
+              System.out.println("Client logged in with ID: " + loginID);
           }
+      }else {
+          String loginID = (String) client.getInfo("loginID");
+          System.out.println("Message received from " + loginID + ": " + message);
+          this.sendToAllClients(loginID + ": " + message);  // Prefix message with login ID
       }
   }
     
@@ -103,24 +89,33 @@ public class EchoServer extends AbstractServer
     System.out.println
       ("Server has stopped listening for connections.");
   }
-  
+  /**
+   * Called when a client connects to the server.
+   * 
+   * @param client The client that connected.
+   */
   @Override
   protected void clientConnected(ConnectionToClient client) {
       System.out.println("Client connected: " + client);
   }
-
+  /**
+   * Called when a client disconnects from the server.
+   * 
+   * @param client The client that disconnected.
+   */
   @Override
-  protected void clientDisconnected(ConnectionToClient client) {
+  synchronized protected void clientDisconnected(ConnectionToClient client) {
       System.out.println("Client disconnected: " + client);
   }
-  
-  public void quit() {
-	    try {
-	        close();
-	    } catch (IOException e) {
-	        System.out.println("Error closing server.");
-	    }
-	    System.exit(0);
+  /**
+   * Called when a client is disconnected due to an exception.
+   * 
+   * @param client The client that was disconnected.
+   * @param exception The exception that caused the disconnection.
+   */
+  @Override
+  synchronized protected void clientException(ConnectionToClient client, Throwable exception) {
+      System.out.println("Client disconnected unexpectedly: " + client);
   }
 
   //Class methods ***************************************************

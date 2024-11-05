@@ -21,15 +21,15 @@ import edu.seg2105.client.common.*;
 public class ChatClient extends AbstractClient
 {
   //Instance variables **********************************************
+    
   
   /**
    * The interface type variable.  It allows the implementation of 
    * the display method in the client.
    */
-  private String loginID;  
-  private String host;     
-  private int port;        
   ChatIF clientUI; 
+  
+  private String loginID;  // The client's login id
 
   
   //Constructors ****************************************************
@@ -42,31 +42,18 @@ public class ChatClient extends AbstractClient
    * @param clientUI The interface type variable.
    */
   
-  public ChatClient(String host, int port, ChatIF clientUI) 
+  public ChatClient(String loginID, String host, int port, ChatIF clientUI) 
     throws IOException 
   {
     super(host, port); //Call the superclass constructor
-    this.loginID = loginID; 
-    this.host = host;        
-    this.port = port;        
     this.clientUI = clientUI;
+    this.loginID = loginID;
     openConnection();
   }
 
   
   //Instance methods ************************************************
     
-  
- //Automatically send the login message when the connection is established
-  @Override
-  protected void connectionEstablished() {
-      try {
-          sendToServer("#login " + loginID);  // Send the login ID to the server
-      } catch (IOException e) {
-          clientUI.display("Error: Could not send login ID to server.");
-      }
-  }
-  
   /**
    * This method handles all data that comes in from the server.
    *
@@ -86,17 +73,32 @@ public class ChatClient extends AbstractClient
    */
   public void handleMessageFromClientUI(String message)
   {
-    try
-    {
-      sendToServer(message);
-    }
-    catch(IOException e)
-    {
-      clientUI.display
-        ("Could not send message to server.  Terminating client.");
-      quit();
-    }
+	  if (message.startsWith("#")) {
+	        // Handle commands
+	        handleCommand(message);
+	    } else {
+	        try {
+	            sendToServer(message);
+	        } catch (IOException e) {
+	            clientUI.display("Could not send message to server. Terminating client.");
+	            quit();
+	        }
+	    }
   }
+  
+  /**
+   * Sends the login ID to the server when the connection is established.
+   */
+  @Override
+  protected void connectionEstablished() {
+      try {
+          sendToServer("#login " + loginID);  // Send the login ID to the server
+      } catch (IOException e) {
+          clientUI.display("Could not send login ID to the server.");
+          quit();
+      }
+  }
+  
   
   /**
    * This method terminates the client.
@@ -107,22 +109,81 @@ public class ChatClient extends AbstractClient
     {
       closeConnection();
     }
-    catch(IOException e) {}
+    catch(IOException e) {clientUI.display("Error closing connection");}
     System.exit(0);
   }
   
   @Override
-  protected void connectionClosed() {
-      System.out.println("The server has shut down.");
-      quit();  // Ensure the client exits cleanly.
+  public void connectionClosed() {
+      System.out.println("Connection closed. Server has shut down.");
+      clientUI.display("The server has shut down.");
+      quit();
   }
 
   @Override
-  protected void connectionException(Exception e) {
-      System.out.println("The connection was lost: " + e.getMessage());
-      quit();  // Ensure the client exits cleanly.
+  public void connectionException(Exception exception) {
+      System.out.println("Server has shut down unexpectedly.");
+      clientUI.display("The server has shut down unexpectedly.");
+      quit();
   }
-
+  /**
+   * This method handles commands entered by the client.
+   * 
+   * @param command The command entered by the client.
+   */
+  private void handleCommand(String command) {
+    if (command.equalsIgnoreCase("#quit")) {
+        quit();
+    } else if (command.equalsIgnoreCase("#logoff")) {
+        try {
+            closeConnection();
+        } catch (IOException e) {
+            clientUI.display("Error logging off.");
+        }
+    } else if (command.startsWith("#sethost")) {
+        if (!isConnected()) {
+            String[] tokens = command.split(" ");
+            if (tokens.length > 1) {
+                setHost(tokens[1]);
+            } else {
+                clientUI.display("Usage: #sethost <host>");
+            }
+        } else {
+            clientUI.display("You must log off before setting the host.");
+        }
+    } else if (command.startsWith("#setport")) {
+        if (!isConnected()) {
+            String[] tokens = command.split(" ");
+            if (tokens.length > 1) {
+                try {
+                    setPort(Integer.parseInt(tokens[1]));
+                } catch (NumberFormatException e) {
+                    clientUI.display("Invalid port number.");
+                }
+            } else {
+                clientUI.display("Usage: #setport <port>");
+            }
+        } else {
+            clientUI.display("You must log off before setting the port.");
+        }
+    } else if (command.equalsIgnoreCase("#login")) {
+        if (!isConnected()) {
+            try {
+                openConnection();
+            } catch (IOException e) {
+                clientUI.display("Could not connect to server.");
+            }
+        } else {
+            clientUI.display("You are already logged in.");
+        }
+    } else if (command.equalsIgnoreCase("#gethost")) {
+        clientUI.display("Current host: " + getHost());
+    } else if (command.equalsIgnoreCase("#getport")) {
+        clientUI.display("Current port: " + getPort());
+    } else {
+        clientUI.display("Unknown command.");
+    }
+  }
   
 }
 //End of ChatClient class

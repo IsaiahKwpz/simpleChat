@@ -106,83 +106,8 @@ public class ClientConsole implements ChatIF
   {
     System.out.println("> " + message);
   }
+
   
-  public void handleMessageFromClientConsole(String message) {
-	    if (message.startsWith("#")) {
-	        handleClientCommand(message);
-	    } else {
-	        try {
-	            client.sendToServer(message);  // Send the message to the server if it's not a command
-	        } catch (IOException e) {
-	            System.out.println("Could not send message to server. Terminating client.");
-	            quit();
-	        }
-	    }
-	}
-
-  private void handleClientCommand(String command) {
-	    if (command.equalsIgnoreCase("#quit")) {
-	        client.quit();
-	    } else if (command.equalsIgnoreCase("#logoff")) {
-	        try {
-	            client.closeConnection();
-	        } catch (IOException e) {
-	            System.out.println("Error logging off.");
-	        }
-	    } else if (command.startsWith("#sethost")) {
-	        if (!client.isConnected()) {
-	            String[] commandParts = command.split(" ");
-	            if (commandParts.length == 2) {
-	                client.setHost(commandParts[1]);
-	                System.out.println("Host set to " + commandParts[1]);
-	            }
-	        } else {
-	            System.out.println("Error: Cannot set host while connected.");
-	        }
-	    } else if (command.startsWith("#setport")) {
-	        if (!client.isConnected()) {
-	            String[] commandParts = command.split(" ");
-	            if (commandParts.length == 2) {
-	                try {
-	                    int port = Integer.parseInt(commandParts[1]);
-	                    client.setPort(port);
-	                    System.out.println("Port set to " + port);
-	                } catch (NumberFormatException e) {
-	                    System.out.println("Invalid port number.");
-	                }
-	            }
-	        } else {
-	            System.out.println("Error: Cannot set port while connected.");
-	        }
-	    } else if (command.equalsIgnoreCase("#login")) {
-	        if (!client.isConnected()) {
-	            try {
-	                client.openConnection();
-	            } catch (IOException e) {
-	                System.out.println("Error connecting to server.");
-	            }
-	        } else {
-	            System.out.println("Error: Already connected.");
-	        }
-	    } else if (command.equalsIgnoreCase("#gethost")) {
-	        System.out.println("Current host: " + client.getHost());
-	    } else if (command.equalsIgnoreCase("#getport")) {
-	        System.out.println("Current port: " + client.getPort());
-	    } else {
-	        System.out.println("Unknown command.");
-	    }
-	}
-  
-  public void quit() {
-	    try {
-	        client.closeConnection();  // Close the connection to the server
-	    } catch (IOException e) {
-	        System.out.println("Error while closing connection.");
-	    }
-	    System.exit(0);  // Exit the program
-	}
-
-
   //Class methods ***************************************************
   
   /**
@@ -192,36 +117,24 @@ public class ClientConsole implements ChatIF
    */
   public static void main(String[] args) 
   {
-	  String loginID ="";
-	  String host = "localhost";  // Default host
-	  int port = DEFAULT_PORT;    // Default port
+	  String loginID = "";
+	  String host = "";
+	  int port = DEFAULT_PORT;
 
 	  try {
-	        // Check for login ID (first argument)
-	        if (args.length > 0) {
-	            loginID = args[0];  // First argument is the login ID
-	        } else {
-	            throw new IllegalArgumentException("Login ID is required. Usage: java ClientConsole <loginID> [<host>] [<port>]");
-	        }
+	      loginID = args[0];  // Get the login id from the first argument
+	      host = args[1];     // Get the host from the second argument (optional)
+	      if (args.length > 2) {
+	          port = Integer.parseInt(args[2]);  // Get the port from the third argument (optional)
+	      }
+	  } catch (ArrayIndexOutOfBoundsException e) {
+		  host = "localhost";  // Default to "localhost" if no host provided
+	  } catch (NumberFormatException e) {
+		  System.out.println("Invalid port number. Using default port " + DEFAULT_PORT);
+	  }
 
-	        // Check for optional host (second argument)
-	        if (args.length > 1) {
-	            host = args[1];
-	        }
-
-	        // Check for optional port (third argument)
-	        if (args.length > 2) {
-	            port = Integer.parseInt(args[2]);
-	        }
-
-	    } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-	        System.out.println("Invalid arguments. Usage: java ClientConsole <loginID> [<host>] [<port>]");
-	        System.exit(1);
-	    }
-
-	    // Create the client console and pass loginID, host, and port
-	    ClientConsole chat = new ClientConsole(loginID, host, port);
-	    chat.accept();  // Start listening for user input
+	  ClientConsole chat = new ClientConsole(loginID, host, port);
+	  chat.accept();  // Wait for console data
   }
 }
 //End of ConsoleChat class
