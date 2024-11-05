@@ -41,9 +41,9 @@ public class EchoServer extends AbstractServer
    *
    * @param port The port number to connect on.
    */
-  public EchoServer(int port) 
-  {
+  public EchoServer(int port, ChatIF server){
     super(port);
+    this.server = server;
   
   }
 
@@ -90,7 +90,7 @@ public class EchoServer extends AbstractServer
    * when the server starts listening for connections.
    */
   protected void serverStarted(){
-    System.out.println("Server is now listening for connections on port " + getPort());
+    server.display("Server is now listening for connections on port " + getPort());
   }
   
   /**
