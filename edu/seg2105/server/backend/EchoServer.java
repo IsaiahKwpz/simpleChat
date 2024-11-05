@@ -155,15 +155,18 @@ public class EchoServer extends AbstractServer
   private void handleCommand(String command) {
       if (command.equals("#quit")) {
           quit();
-      } else if (command.equals("#stop")) {
+      } 
+      else if (command.equals("#stop")) {
           stopListening();
-      } else if (command.equals("#close")) {
+      } 
+      else if (command.equals("#close")) {
           try {
               close();
           } catch (Exception e) {
               System.out.println("Error closing server.");
           }
-      } else if (command.startsWith("#setport")) {
+      } 
+      else if (command.startsWith("#setport")) {
           if (getNumberOfClients() == 0 && !isListening()) {
               String[] tokens = command.split(" ");
               if (tokens.length > 1) {
@@ -178,7 +181,8 @@ public class EchoServer extends AbstractServer
           } else {
               System.out.println("Stop the server before setting the port.");
           }
-      } else if (command.equals("#start")) {
+      } 
+      else if (command.equals("#start")) {
           if (!isListening()) {
               try {
                   listen();
@@ -188,9 +192,11 @@ public class EchoServer extends AbstractServer
           } else {
               System.out.println("Server is already running.");
           }
-      } else if (command.equalsIgnoreCase("#getport")) {
+      } 
+      else if (command.equalsIgnoreCase("#getport")) {
           System.out.println("Current port: " + getPort());
-      } else {
+      } 
+      else {
           System.out.println("Unknown command.");
       }
   }
