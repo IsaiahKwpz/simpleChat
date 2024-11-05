@@ -116,9 +116,9 @@ public class ClientConsole implements ChatIF
 	            System.exit(0);
 	        }
 	      loginID = args[0];  // Get the login id from the first argument
-	      host = args[1];     // Get the host from the second argument (optional)
+	      host = args[1];     // Get the host from the second argument 
 	      if (args.length > 2) {
-	          port = Integer.parseInt(args[2]);  // Get the port from the third argument (optional)
+	          port = Integer.parseInt(args[2]);  // Get the port from the third argument 
 	      }
 	  } catch (ArrayIndexOutOfBoundsException e) {
 		  host = "localhost";  // Default to "localhost" if no host provided
