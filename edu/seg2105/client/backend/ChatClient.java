@@ -180,7 +180,12 @@ public class ChatClient extends AbstractClient
     } 
     else if (command.equals("#login")) { //logs in
         if (!isConnected()) {
-            connectionEstablished();
+        	try {
+        		openConnection();
+        	}catch(IOException e) {
+        		clientUI.display("failed to connect to the server");
+        	}
+            
         } else {
             clientUI.display("You are already logged in.");
         }
