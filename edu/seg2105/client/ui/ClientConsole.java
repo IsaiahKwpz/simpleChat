@@ -135,6 +135,7 @@ public class ClientConsole implements ChatIF
 		  host = "localhost";  // Default to "localhost" if no host provided
 	  } catch (NumberFormatException e) {
 		  System.out.println("Invalid port number. Using default port " + DEFAULT_PORT);
+		  port = DEFAULT_PORT;
 	  }
 
 	  ClientConsole chat = new ClientConsole(loginID, host, port);
