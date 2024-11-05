@@ -6,6 +6,7 @@ package server.backend;
 
 import java.io.IOException;
 
+import client.common.ChatIF;
 import ocsf.server.*;
 
 /**
@@ -26,6 +27,10 @@ public class EchoServer extends AbstractServer
    */
   final public static int DEFAULT_PORT = 5555;
   
+  final public static String loginKey = "loginID";
+  
+  ChatIF serverUI; 
+  
   //Constructors ****************************************************
   
   /**
@@ -36,6 +41,7 @@ public class EchoServer extends AbstractServer
   public EchoServer(int port) 
   {
     super(port);
+  
   }
 
   
@@ -50,25 +56,29 @@ public class EchoServer extends AbstractServer
   public void handleMessageFromClient
     (Object msg, ConnectionToClient client)
   {
+	  System.out.println("Message received: " + msg + " from " + client.getInfo(loginKey));
 	  String message = msg.toString();
 
       if (message.startsWith("#login ")) {
-          if (client.getInfo("loginID") != null) {
-              try {
-                  client.sendToClient("Error: You are already logged in.");
-                  client.close();  // Disconnect if trying to login again
-              } catch (IOException e) {
-                  e.printStackTrace();
-              }
-          } else {
-              String loginID = message.substring(7);  // Extract login ID
-              client.setInfo("loginID", loginID);  // Store the login ID
-              System.out.println("Client logged in with ID: " + loginID);
+          if (client.getInfo("loginID") == null) {
+        	  String loginID = message.substring(7);
+        	  client.setInfo(loginKey, loginID);
+        	  
+        	  //Send login message
+        	  String newMessage = loginID + " has logged on";
+        	  System.out.println(newMessage);
+  			  sendToAllClients(newMessage);
           }
-      }else {
-          String loginID = (String) client.getInfo("loginID");
-          System.out.println("Message received from " + loginID + ": " + message);
-          this.sendToAllClients(loginID + ": " + message);  // Prefix message with login ID
+          else {
+        	  try {
+        		  client.sendToClient("Error - Already logged in - terminating connection");
+  				client.close();
+  			} catch (IOException e) {}        	  
+         }
+      }
+      else {
+    	  Object loginID = client.getInfo(loginKey);
+    	  this.sendToAllClients(loginID + "> " + msg);
       }
   }
     
@@ -119,6 +129,73 @@ public class EchoServer extends AbstractServer
   synchronized protected void clientException(ConnectionToClient client, Throwable exception) {
       System.out.println("Client disconnected unexpectedly: " + client);
   }
+  
+  /**
+   * 
+   * @param this method will handle data coming from server console
+   */
+  public void handleMessageFromServerUI(String message) {
+	    if(message.startsWith("#")) {
+			handleCommand(message);
+		}
+		
+		else if(isListening()){
+			// echo server message to the server and all clients
+			String toDisplay = "Server MSG> " + message;
+			serverUI.display(toDisplay);
+			sendToAllClients(toDisplay);
+		}
+}
+  
+  /**
+   * This method handles commands from the server console.
+   * 
+   * @param command The command entered by the server admin.
+   */
+  private void handleCommand(String command) {
+      if (command.equals("#quit")) {
+          quit();
+      } else if (command.equals("#stop")) {
+          stopListening();
+      } else if (command.equals("#close")) {
+          try {
+              close();
+          } catch (Exception e) {
+              System.out.println("Error closing server.");
+          }
+      } else if (command.startsWith("#setport")) {
+          if (getNumberOfClients() == 0 && !isListening()) {
+              String[] tokens = command.split(" ");
+              if (tokens.length > 1) {
+                  try {
+                      setPort(Integer.parseInt(tokens[1]));
+                  } catch (NumberFormatException e) {
+                      System.out.println("Invalid port number.");
+                  }
+              } else {
+                  System.out.println("Usage: #setport <port>");
+              }
+          } else {
+              System.out.println("Stop the server before setting the port.");
+          }
+      } else if (command.equals("#start")) {
+          if (!isListening()) {
+              try {
+                  listen();
+              } catch (Exception e) {
+                  System.out.println("Could not start server.");
+              }
+          } else {
+              System.out.println("Server is already running.");
+          }
+      } else if (command.equalsIgnoreCase("#getport")) {
+          System.out.println("Current port: " + getPort());
+      } else {
+          System.out.println("Unknown command.");
+      }
+  }
+  
+  
   /**
    * This method terminates the server.
    */
@@ -131,7 +208,7 @@ public class EchoServer extends AbstractServer
     catch(IOException e) {}
     System.exit(0);
   }
-
+  
   //Class methods ***************************************************
   
   /**

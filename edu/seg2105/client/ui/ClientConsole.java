@@ -123,7 +123,7 @@ public class ClientConsole implements ChatIF
 
 	  try {
 		  if (args.length == 0) {
-	            throw new IllegalArgumentException("ERROR - No login ID specified. Connection aborted.");\
+	            System.out.println("ERROR - No login ID specified. Connection aborted.");
 	            System.exit(0);
 	        }
 	      loginID = args[0];  // Get the login id from the first argument

@@ -35,7 +35,7 @@ public class ServerConsole implements ChatIF {
     		
     		while (true) {
     			String message = fromConsole.nextLine();
-    			handleCommand(message);
+    			server.handleMessageFromServerUI(message);
     		}
     	}catch(Exception ex) 
 	    {
@@ -44,53 +44,7 @@ public class ServerConsole implements ChatIF {
   	    }
     }
 
-    /**
-     * This method handles commands from the server console.
-     * 
-     * @param command The command entered by the server admin.
-     */
-    private void handleCommand(String command) {
-        if (command.equalsIgnoreCase("#quit")) {
-            System.exit(0);
-        } else if (command.equalsIgnoreCase("#stop")) {
-            server.stopListening();
-        } else if (command.equalsIgnoreCase("#close")) {
-            try {
-                server.close();
-            } catch (Exception e) {
-                System.out.println("Error closing server.");
-            }
-        } else if (command.startsWith("#setport")) {
-            if (!server.isListening()) {
-                String[] tokens = command.split(" ");
-                if (tokens.length > 1) {
-                    try {
-                        server.setPort(Integer.parseInt(tokens[1]));
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid port number.");
-                    }
-                } else {
-                    System.out.println("Usage: #setport <port>");
-                }
-            } else {
-                System.out.println("Stop the server before setting the port.");
-            }
-        } else if (command.equalsIgnoreCase("#start")) {
-            if (!server.isListening()) {
-                try {
-                    server.listen();
-                } catch (Exception e) {
-                    System.out.println("Could not start server.");
-                }
-            } else {
-                System.out.println("Server is already running.");
-            }
-        } else if (command.equalsIgnoreCase("#getport")) {
-            System.out.println("Current port: " + server.getPort());
-        } else {
-            System.out.println("Unknown command.");
-        }
-    }
+    
 
     @Override
     public void display(String message) {
