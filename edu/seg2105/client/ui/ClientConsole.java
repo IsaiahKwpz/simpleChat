@@ -119,7 +119,7 @@ public class ClientConsole implements ChatIF
   {
 	  String loginID = "";
 	  String host = "";
-	  int port = DEFAULT_PORT;
+	  int port = 0;
 
 	  try {
 		  if (args.length == 0) {

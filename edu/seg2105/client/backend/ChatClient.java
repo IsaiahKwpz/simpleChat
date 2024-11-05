@@ -117,8 +117,8 @@ public class ChatClient extends AbstractClient
   
   @Override
   public void connectionClosed() {
-      System.out.println("Connection closed. Server has shut down.");
-      clientUI.display("The server has shut down.");
+      System.out.println("Connection closed");
+      clientUI.display("Connection closed");
   }
 
   @Override
@@ -169,11 +169,7 @@ public class ChatClient extends AbstractClient
         }
     } else if (command.equals("#login")) {
         if (!isConnected()) {
-            try {
-                openConnection();
-            } catch (IOException e) {
-                clientUI.display("Could not connect to server.");
-            }
+            connectionEstablished();
         } else {
             clientUI.display("You are already logged in.");
         }

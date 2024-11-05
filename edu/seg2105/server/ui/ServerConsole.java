@@ -52,12 +52,13 @@ public class ServerConsole implements ChatIF {
     }
 
     public static void main(String[] args) {
-        int port = DEFAULT_PORT;
+        int port = 0;
 
         try {
             port = Integer.parseInt(args[0]);
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("No port specified. Defaulting to " + DEFAULT_PORT);
+            port = DEFAULT_PORT;
         }
 
         ServerConsole serverConsole = new ServerConsole(port);

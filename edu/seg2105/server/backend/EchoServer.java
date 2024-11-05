@@ -108,7 +108,8 @@ public class EchoServer extends AbstractServer
    */
   @Override
   protected void clientConnected(ConnectionToClient client) {
-      System.out.println("Client connected: " + client);
+	  String loginID = (String) client.getInfo(loginKey);
+      System.out.println("Client connected: " + loginID);
   }
   /**
    * Called when a client disconnects from the server.
@@ -117,7 +118,8 @@ public class EchoServer extends AbstractServer
    */
   @Override
   synchronized protected void clientDisconnected(ConnectionToClient client) {
-      System.out.println("Client disconnected: " + client);
+	  String loginID = (String) client.getInfo(loginKey);
+      System.out.println("Client disconnected: " + loginID);
   }
   /**
    * Called when a client is disconnected due to an exception.
@@ -217,36 +219,6 @@ public class EchoServer extends AbstractServer
   
   //Class methods ***************************************************
   
-  /**
-   * This method is responsible for the creation of 
-   * the server instance (there is no UI in this phase).
-   *
-   * @param args[0] The port number to listen on.  Defaults to 5555 
-   *          if no argument is entered.
-   */
-  public static void main(String[] args) 
-  {
-    int port = 0; //Port to listen on
-
-    try
-    {
-      port = Integer.parseInt(args[0]); //Get port from command line
-    }
-    catch(Throwable t)
-    {
-      port = DEFAULT_PORT; //Set port to 5555
-    }
-	
-    EchoServer sv = new EchoServer(port);
-    
-    try 
-    {
-      sv.listen(); //Start listening for connections
-    } 
-    catch (Exception ex) 
-    {
-      System.out.println("ERROR - Could not listen for clients!");
-    }
-  }
+  
 }
 //End of EchoServer class
