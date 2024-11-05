@@ -56,7 +56,7 @@ public class ClientConsole implements ChatIF
       client= new ChatClient(loginID, host, port, this);      
     } 
     catch(IOException exception) {
-      System.out.println("Can't setup connection!" + " Terminating client.");
+      System.out.println("Can't setup connection! Terminating client.");
       System.exit(1);
     }
     

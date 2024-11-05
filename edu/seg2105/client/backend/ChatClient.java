@@ -83,7 +83,7 @@ public class ChatClient extends AbstractClient
 	    } 
 	  }
 	  catch (IOException e) {
-	            clientUI.display("Could not send message to server. Terminating client.");
+	            clientUI.display("Unable to send message to server. Terminating client.");
 	            quit();
 	    }
   }
@@ -156,7 +156,7 @@ public class ChatClient extends AbstractClient
             if (tokens.length > 1) {
                 setHost(tokens[1]);
             } else {
-                clientUI.display("Usage: #sethost <host>");
+                clientUI.display("Scenario: #sethost <host> missing");
             }
         } else {
             clientUI.display("You must log off before setting the host.");
@@ -172,7 +172,7 @@ public class ChatClient extends AbstractClient
                     clientUI.display("Invalid port number.");
                 }
             } else {
-                clientUI.display("Usage: #setport <port>");
+                clientUI.display("Scenario: #setport <port> missing");
             }
         } else {
             clientUI.display("You must log off before setting the port.");
