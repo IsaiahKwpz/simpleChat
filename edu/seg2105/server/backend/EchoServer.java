@@ -141,8 +141,11 @@ public class EchoServer extends AbstractServer
 		
 		else if(isListening()){
 			// echo server message to the server and all clients
+			
+			System.out.println("A new client has connected to the server.");
+			System.out.println("Message received: " + message);
 			String toDisplay = "Server MSG> " + message;
-			serverUI.display(toDisplay);
+			System.out.println(toDisplay);
 			sendToAllClients(toDisplay);
 		}
 }
