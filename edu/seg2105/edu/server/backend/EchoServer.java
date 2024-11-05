@@ -47,11 +47,41 @@ public class EchoServer extends AbstractServer
    * @param msg The message received from the client.
    * @param client The connection from which the message originated.
    */
-  public void handleMessageFromClient
-    (Object msg, ConnectionToClient client)
+  public void handleMessageFromClient(Object msg, ConnectionToClient client)
   {
-    System.out.println("Message received: " + msg + " from " + client);
-    this.sendToAllClients(msg);
+	  String message = msg.toString();
+
+      // Check if the message is a login command
+      if (message.startsWith("#login")) {
+          String[] parts = message.split(" ");
+          if (parts.length == 2) {
+              String loginID = parts[1];  // Extract the login ID
+              client.setInfo("loginID", loginID);  // Store the login ID in the client connection
+              System.out.println("Client " + loginID + " has logged in.");
+          } else {
+              try {
+                  client.sendToClient("Error: Invalid login command.");
+                  client.close();  // Close connection if the login command is invalid
+              } catch (IOException e) {
+                  System.out.println("Error handling invalid login.");
+              }
+          }
+      } else {
+          // Check if the client has already logged in
+          if (client.getInfo("loginID") == null) {
+              try {
+                  client.sendToClient("Error: You must log in first.");
+                  client.close();  // Close connection if the login has not occurred
+              } catch (IOException e) {
+                  System.out.println("Error: Unable to close connection.");
+              }
+          } else {
+              // Handle normal messages and prefix with loginID
+              String loginID = (String) client.getInfo("loginID");
+              System.out.println("Message from " + loginID + ": " + message);
+              sendToAllClients(loginID + ": " + message);  // Broadcast the message with loginID
+          }
+      }
   }
     
   /**

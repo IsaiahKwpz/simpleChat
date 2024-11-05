@@ -26,6 +26,9 @@ public class ChatClient extends AbstractClient
    * The interface type variable.  It allows the implementation of 
    * the display method in the client.
    */
+  private String loginID;  
+  private String host;     
+  private int port;        
   ChatIF clientUI; 
 
   
@@ -43,6 +46,9 @@ public class ChatClient extends AbstractClient
     throws IOException 
   {
     super(host, port); //Call the superclass constructor
+    this.loginID = loginID; 
+    this.host = host;        
+    this.port = port;        
     this.clientUI = clientUI;
     openConnection();
   }
@@ -50,6 +56,17 @@ public class ChatClient extends AbstractClient
   
   //Instance methods ************************************************
     
+  
+ //Automatically send the login message when the connection is established
+  @Override
+  protected void connectionEstablished() {
+      try {
+          sendToServer("#login " + loginID);  // Send the login ID to the server
+      } catch (IOException e) {
+          clientUI.display("Error: Could not send login ID to server.");
+      }
+  }
+  
   /**
    * This method handles all data that comes in from the server.
    *
