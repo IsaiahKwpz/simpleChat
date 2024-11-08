@@ -73,15 +73,14 @@ public class ClientConsole implements ChatIF
    */
   public void accept() {
     try{
-      String message;
 
       while (true) {
-        message = fromConsole.nextLine();
+    	String message = fromConsole.nextLine();
         client.handleMessageFromClientUI(message);
       }
     } 
     catch (Exception ex) {
-      System.out.println("Unexpected error while reading from console!");
+      System.out.println("Unexpected error when trying to read from console!");
     }
   }
 
@@ -108,13 +107,13 @@ public class ClientConsole implements ChatIF
   {
 	  String loginID = "";
 	  String host = "";
-	  int port = 0;
+	  int port = DEFAULT_PORT;
 
 	  try {
 		  if (args.length == 0) {
 	            System.out.println("No login ID specified. Connection aborted.");
 	            System.exit(0);
-	        }
+	      }
 	      loginID = args[0];  // Get the login id from the first argument
 	      host = args[1];     // Get the host from the second argument 
 	      if (args.length > 2) {
@@ -124,7 +123,6 @@ public class ClientConsole implements ChatIF
 		  host = "localhost";  // Default to "localhost" if no host provided
 	  } catch (NumberFormatException e) {
 		  System.out.println("Invalid port number. Using default port " + DEFAULT_PORT);
-		  port = DEFAULT_PORT;
 	  }
 
 	  ClientConsole chat = new ClientConsole(loginID, host, port);

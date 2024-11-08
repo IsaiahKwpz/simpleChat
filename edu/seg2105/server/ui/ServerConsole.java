@@ -27,7 +27,7 @@ public class ServerConsole implements ChatIF {
     		server = new EchoServer(port, this);
     		server.listen();
     	}catch(IOException excpetion) {
-    		System.out.println("Error: Could not listen for clients!");
+    		System.out.println("Could not listen for clients!");
 			System.exit(1);
     	}
         
@@ -41,7 +41,6 @@ public class ServerConsole implements ChatIF {
      */
     public void accept() {
     	try {
-    		
     		while (true) {
     			String message = fromConsole.nextLine();
     			server.handleMessageFromServerUI(message);
@@ -65,13 +64,13 @@ public class ServerConsole implements ChatIF {
      * This method creates the server UI
      */
     public static void main(String[] args) {
-        int port = 0;
-
+        int port = DEFAULT_PORT;
+        
         try {
             port = Integer.parseInt(args[0]);
         } catch (ArrayIndexOutOfBoundsException e) { //if no port providing, set default port
             System.out.println("No port specified. Defaulting to " + DEFAULT_PORT);
-            port = DEFAULT_PORT;
+            
         }
 
         ServerConsole serverConsole = new ServerConsole(port);

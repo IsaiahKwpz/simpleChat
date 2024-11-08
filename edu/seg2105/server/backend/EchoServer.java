@@ -56,9 +56,8 @@ public class EchoServer extends AbstractServer
    * @param msg The message received from the client.
    * @param client The connection from which the message originated.
    */
-  public void handleMessageFromClient
-    (Object msg, ConnectionToClient client)
-  {
+  public void handleMessageFromClient(Object msg, ConnectionToClient client){
+	  
 	  server.display("Message received: " + msg + " from " + client.getInfo(loginKey));
 	  String message = msg.toString();
 
@@ -74,7 +73,7 @@ public class EchoServer extends AbstractServer
           }
           else {
         	  try {
-        		  client.sendToClient("Already logged in - terminating connection");
+        		client.sendToClient("Already logged in, terminating connection");
   				client.close();
   			} catch (IOException e) {}        	  
          }
@@ -101,6 +100,12 @@ public class EchoServer extends AbstractServer
   {
     server.display("Server has now stopped listening for connections.");
   }
+  
+  
+  /*****Hook Methods******
+  
+  
+   */
   /**
    * Called when a client connects to the server.
    * 
@@ -179,7 +184,7 @@ public class EchoServer extends AbstractServer
                       System.out.println("Invalid port number.");
                   }
               } else {
-                  System.out.println("Usage: #setport <port>");
+                  System.out.println("Type: #setport <port>");
               }
           } else {
               System.out.println("Stop the server before setting the port.");
@@ -190,7 +195,7 @@ public class EchoServer extends AbstractServer
               try {
                   listen();
               } catch (Exception e) {
-                  System.out.println("Could not start server.");
+                  System.out.println("Could not lsiten for clients.");
               }
           } else {
               System.out.println("Server is already running.");

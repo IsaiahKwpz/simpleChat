@@ -79,7 +79,7 @@ public class ChatClient extends AbstractClient
 			  // Handle commands
 	          handleCommand(message);
 	    } else if(isConnected()) {
-	            sendToServer(message);
+	            sendToServer(message); //sends message to server otherwise
 	    } 
 	  }
 	  catch (IOException e) {
@@ -89,7 +89,7 @@ public class ChatClient extends AbstractClient
   }
   
   /**
-   * Sends the login ID to the server when the connection is established.
+   * This hook method sends the login ID to the server when the connection is established.
    */
   @Override
   protected void connectionEstablished() {
@@ -116,21 +116,19 @@ public class ChatClient extends AbstractClient
   }
   
   /**
-   * This method displays connection closed to client when connecton is closed
+   * This hook method displays connection closed to client when connecton is closed
    */
   
   @Override
   public void connectionClosed() {
-      System.out.println("Connection closed");
       clientUI.display("Connection closed");
   }
 
   /**
-   * This method displays server shut down unexepectedly when a connection exception occurs
+   * This hook method displays server shut down unexepectedly when a connection exception occurs
    */
   @Override
   public void connectionException(Exception exception) {
-      System.out.println("Server has shut down unexpectedly.");
       clientUI.display("The server has shut down unexpectedly.");
       System.exit(0);
   }
@@ -156,7 +154,7 @@ public class ChatClient extends AbstractClient
             if (tokens.length > 1) {
                 setHost(tokens[1]);
             } else {
-                clientUI.display("Scenario: #sethost <host> missing");
+                clientUI.display("Type: #sethost <host>");
             }
         } else {
             clientUI.display("You must log off before setting the host.");
@@ -172,7 +170,7 @@ public class ChatClient extends AbstractClient
                     clientUI.display("Invalid port number.");
                 }
             } else {
-                clientUI.display("Scenario: #setport <port> missing");
+                clientUI.display("Type: #setport <port>");
             }
         } else {
             clientUI.display("You must log off before setting the port.");
