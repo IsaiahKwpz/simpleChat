@@ -70,7 +70,6 @@ public class ServerConsole implements ChatIF {
             port = Integer.parseInt(args[0]);
         } catch (ArrayIndexOutOfBoundsException e) { //if no port providing, set default port
             System.out.println("No port specified. Defaulting to " + DEFAULT_PORT);
-            
         }
 
         ServerConsole serverConsole = new ServerConsole(port);
